@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final RoleService roleService;
 
     @Autowired
-    public UserServiceImpl(UserDao userDao, PasswordEncoder passwordEncoder, RoleService roleService){
+    public UserServiceImpl(UserDao userDao, PasswordEncoder passwordEncoder, RoleService roleService) {
         this.userDao = userDao;
         this.passwordEncoder = passwordEncoder;
         this.roleService = roleService;
@@ -35,18 +35,22 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Transactional
     public void addUser(User user) {
+        // todo осуществить проверку данных пользователя
+        /*
+         * Осуществить проверку email на корректность и уникальность.
+         * Проверить nickname на уникальность и корректность.
+         * Проверить пароль на надёжность.
+         */
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setDatePersist(Date.from(Instant.now()));
+
         if(user.getRoles() == null) {
             List<Role> roles = new ArrayList<>();
             roles.add(roleService.getRoleByAuthority("ROLE_USER"));
             user.setRoles(roles);
         }
-        userDao.addUser(user);
-    }
 
-    @Override
-    public String passwordEncode(String password) {
-        return passwordEncoder.encode(password);
+        userDao.addUser(user);
     }
 
     @Override

@@ -29,11 +29,11 @@ public class WebSecurityConfig implements AuthenticationSuccessHandler {
                 .antMatchers("/api/task/**").hasAnyRole("USER", "ADMIN")
                 .antMatchers("/inbox").hasAnyRole("USER", "ADMIN");
 
-
         http.
                 formLogin()
                 .successHandler(this)
                 .permitAll();
+
         return http.build();
     }
 

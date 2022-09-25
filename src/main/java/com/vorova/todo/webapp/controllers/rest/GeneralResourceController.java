@@ -20,8 +20,6 @@ public class GeneralResourceController {
 
     @PostMapping("/add_user")
     public ResponseEntity<?> addUser(@RequestBody User user) {
-        // todo осуществить проверку данных пользователя
-        user.setPassword(userService.passwordEncode(user.getPassword()));
         userService.addUser(user);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
