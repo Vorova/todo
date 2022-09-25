@@ -2,7 +2,6 @@ package com.vorova.todo.service;
 
 import com.vorova.todo.models.entity.Role;
 import com.vorova.todo.models.entity.User;
-import com.vorova.todo.models.enums.Roles;
 import com.vorova.todo.service.abstracts.RoleService;
 import com.vorova.todo.service.abstracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,10 +34,10 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
     private void addRoles() {
 
         Role admin = new Role();
-        admin.setAuthority(Roles.ROLE_ADMIN);
+        admin.setAuthority("ROLE_ADMIN");
 
         Role user = new Role();
-        user.setAuthority(Roles.ROLE_USER);
+        user.setAuthority("ROLE_USER");
 
         List<Role> roles = new ArrayList<>();
         roles.add(admin);
@@ -68,7 +67,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
     }
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
         addRoles();
         addUsers(25);
     }

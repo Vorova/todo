@@ -2,8 +2,6 @@ package com.vorova.todo.dao.impl;
 
 import com.vorova.todo.dao.abstracts.RoleDao;
 import com.vorova.todo.models.entity.Role;
-import com.vorova.todo.models.enums.Roles;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +25,7 @@ public class RoleDaoImpl implements RoleDao {
         return entityManager.createQuery("""
             SELECT r FROM Role r WHERE r.authority = :authority
         """, Role.class)
-                .setParameter("authority", Roles.ROLE_USER)
+                .setParameter("authority", authority)
                 .getSingleResult();
     }
 
