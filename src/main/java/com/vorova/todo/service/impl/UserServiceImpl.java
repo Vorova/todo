@@ -35,7 +35,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Transactional
     public void addUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setDatePersist(Date.from(Instant.now()));
         if(user.getRoles() == null) {
             List<Role> roles = new ArrayList<>();
@@ -46,13 +45,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public User getUserByName(String name) {
-        Optional<User> user = userDao.findByUsername(name);
-        if(user.isPresent()) {
-            return user.get();
-        } else {
-            throw new UsernameNotFoundException("Not found user");
-        }
+    public String passwordEncode(String password) {
+        return passwordEncoder.encode(password);
     }
 
     @Override

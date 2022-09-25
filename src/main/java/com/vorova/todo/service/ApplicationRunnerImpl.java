@@ -22,13 +22,11 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
 
     private final RoleService roleService;
 
-    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public ApplicationRunnerImpl(UserService userService, RoleService roleService, PasswordEncoder passwordEncoder) {
+    public ApplicationRunnerImpl(UserService userService, RoleService roleService) {
         this.userService = userService;
         this.roleService = roleService;
-        this.passwordEncoder = passwordEncoder;
     }
 
     private void addRoles() {
@@ -58,7 +56,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
 
             user.setUsername("name" + i);
             user.setEmail(i + "@mail.ru");
-            user.setPassword(passwordEncoder.encode("pass" + i));
+            user.setPassword(userService.passwordEncode("pass" + i));
             user.setDatePersist(Date.from(Instant.now()));
             user.setRoles(roles);
 
