@@ -1,7 +1,6 @@
 package com.vorova.todo.models.entity;
 
 import lombok.*;
-import org.hibernate.Hibernate;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
@@ -10,8 +9,6 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "roles")
