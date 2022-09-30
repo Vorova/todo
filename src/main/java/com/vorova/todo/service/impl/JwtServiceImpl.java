@@ -4,8 +4,7 @@ import com.vorova.todo.models.entity.Role;
 import com.vorova.todo.models.entity.User;
 import com.vorova.todo.security.JwtAuthentication;
 import com.vorova.todo.service.abstracts.JwtService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,12 +58,12 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public boolean validateAccessesToken(String accessToken) throws Exception {
+    public boolean validateAccessesToken(String accessToken) {
         return validateToken(accessToken, jwtAccessesSecret);
     }
 
     @Override
-    public boolean validateRefreshToken(String refreshToken) throws Exception {
+    public boolean validateRefreshToken(String refreshToken) {
         return validateToken(refreshToken, jwtRefreshSecret);
     }
 
@@ -86,6 +85,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
     private Set<Role> getRolesForGenerateAuthentication(Claims claims) {
+        // todo посмотреть warning
         List<Role> roleList = claims.get("roles", List.class);
         return new HashSet<>(roleList);
     }
@@ -98,16 +98,21 @@ public class JwtServiceImpl implements JwtService {
                 .getBody();
     }
 
-    private boolean validateToken(String token, Key secretKey) throws Exception {
+    private boolean validateToken(String token, Key secretKey) {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(secretKey)
                     .build()
                     .parseClaimsJws(token);
             return true;
-        } catch (Exception e) {
-            // todo проработать различные исключения
-            throw new Exception("Проблемы с токеном!");
+        } catch (ExpiredJwtException expEx) {
+            throw new JwtException("Expired Jwt", expEx);
+        } catch (UnsupportedJwtException unsEx) {
+            throw new JwtException("Unsupported jwt", unsEx);
+        } catch (MalformedJwtException malformedEx) {
+            throw new JwtException("Malformed Jwt", malformedEx);
+        } catch (Exception ex) {
+            throw new JwtException("Invalid Jwt", ex);
         }
     }
 

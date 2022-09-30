@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.security.auth.message.AuthException;
 
 @RestController
-@RequestMapping("/auth") // todo изменить на api/auth
+@RequestMapping("/api/auth")
 public class AuthController {
 
     private final AuthService authService;

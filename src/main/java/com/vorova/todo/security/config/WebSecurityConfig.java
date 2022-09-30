@@ -33,7 +33,7 @@ public class WebSecurityConfig implements AuthenticationSuccessHandler {
         http.csrf().disable()
             .authorizeHttpRequests(
                 auth -> auth
-                    .antMatchers("/auth/**").permitAll()
+                    .antMatchers("/api/auth/**").permitAll()
                     .antMatchers("/api/**").authenticated()
                     .antMatchers("inbox").hasAnyRole("USER", "ADMIN")
                     .and()

@@ -2,7 +2,6 @@ package com.vorova.todo.security;
 
 import com.vorova.todo.service.abstracts.JwtService;
 import io.jsonwebtoken.Claims;
-import lombok.SneakyThrows;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -26,8 +25,6 @@ public class JwtFilter extends GenericFilterBean {
         this.jwtService = jwtService;
     }
 
-    // todo удалить SneakyThrows
-    @SneakyThrows
     @Override
     public void doFilter(ServletRequest servletRequest,
                          ServletResponse servletResponse,

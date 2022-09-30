@@ -10,9 +10,9 @@ public interface JwtService {
 
     String generateRefreshToken(User user);
 
-    boolean validateAccessesToken(String accessToken) throws Exception;
+    boolean validateAccessesToken(String accessToken);
 
-    boolean validateRefreshToken(String refreshToken) throws Exception;
+    boolean validateRefreshToken(String refreshToken);
 
     Claims getAccessesClaims(String accessesToken);
 
