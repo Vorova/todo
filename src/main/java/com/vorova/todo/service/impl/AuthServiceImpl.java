@@ -3,13 +3,11 @@ package com.vorova.todo.service.impl;
 import com.vorova.todo.models.dto.JwtRequestDto;
 import com.vorova.todo.models.dto.JwtResponseDto;
 import com.vorova.todo.models.entity.User;
-import com.vorova.todo.security.JwtAuthentication;
 import com.vorova.todo.service.abstracts.AuthService;
 import com.vorova.todo.service.abstracts.JwtService;
 import com.vorova.todo.service.abstracts.UserService;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -35,8 +33,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public JwtResponseDto login(JwtRequestDto requestDto) throws AuthException {
-        User user = userService.getByLogin(requestDto.getLogin())
-            .orElseThrow(() -> new AuthException("User with name " + requestDto.getLogin() + " not found"));
+        User user = userService.getByEmail(requestDto.getEmail())
+            .orElseThrow(() -> new AuthException("User with email " + requestDto.getEmail() + " not found"));
         if(encoder.matches(requestDto.getPassword(), user.getPassword())) {
             final String accessesToken = jwtService.generateAccessesToken(user);
             final String refreshToken = jwtService.generateRefreshToken(user);
@@ -48,41 +46,37 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public JwtResponseDto getAccessToken(String refreshToken) throws Exception {
+    public JwtResponseDto getAccessToken(String refreshToken) throws AuthException {
         if(jwtService.validateRefreshToken(refreshToken)) {
             Claims claims = jwtService.getRefreshClaims(refreshToken);
-            String login = claims.getSubject();
-            String saveRefreshStorage = refreshStorage.get(login);
+            String email = claims.getSubject();
+            String saveRefreshStorage = refreshStorage.get(email);
             if(saveRefreshStorage != null && saveRefreshStorage.equals(refreshToken)) {
-                User user = userService.getByLogin(login)
-                        .orElseThrow(() -> new AuthException(("User with name " + login + " not found")));
+                User user = userService.getByEmail(email)
+                        .orElseThrow(() -> new AuthException(("User with name " + email + " not found")));
                 String accessToken = jwtService.generateAccessesToken(user);
                 return new JwtResponseDto(accessToken, null);
             }
+            throw new AuthException("Invalid refresh token");
         }
         return new JwtResponseDto(null, null);
     }
 
     @Override
-    public JwtResponseDto refresh(String refreshToken) throws Exception {
+    public JwtResponseDto refresh(String refreshToken) throws AuthException {
         if(jwtService.validateRefreshToken(refreshToken)) {
             Claims claims = jwtService.getRefreshClaims(refreshToken);
-            String login = claims.getSubject();
-            String saveRefreshStorage = refreshStorage.get(login);
+            String email = claims.getSubject();
+            String saveRefreshStorage = refreshStorage.get(email);
             if(saveRefreshStorage != null && saveRefreshStorage.equals(refreshToken)) {
-                User user = userService.getByLogin(login)
-                        .orElseThrow(() -> new AuthException("Пользователь не найден"));
+                User user = userService.getByEmail(email)
+                        .orElseThrow(() -> new AuthException("User with name " + email + " not found"));
                 String accessToken = jwtService.generateAccessesToken(user);
                 String newRefreshToken = jwtService.generateRefreshToken(user);
                 refreshStorage.put(user.getEmail(), newRefreshToken);
                 return new JwtResponseDto(accessToken, newRefreshToken);
             }
         }
-        throw new AuthException("Не валидный JWT");
-    }
-
-    @Override
-    public JwtAuthentication getAuthInfo() {
-        return (JwtAuthentication) SecurityContextHolder.getContext().getAuthentication();
+        throw new AuthException("Invalid refresh token");
     }
 }

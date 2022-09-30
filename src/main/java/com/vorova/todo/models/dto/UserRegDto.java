@@ -4,14 +4,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
-@Schema(name = "Jwt Request")
+@Schema(name = "DTO User при регистрации")
 @Getter
 @Setter
-public class JwtRequestDto {
+public class UserRegDto {
 
-    @Schema(title = "email")
+    @Schema(title = "Email")
     private String email;
-    @Schema(title = "password")
+
+    @Schema(title = "Password")
     private String password;
 
 }

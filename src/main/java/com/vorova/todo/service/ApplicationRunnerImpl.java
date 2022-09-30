@@ -1,5 +1,6 @@
 package com.vorova.todo.service;
 
+import com.vorova.todo.exception.UserRegException;
 import com.vorova.todo.models.entity.Role;
 import com.vorova.todo.models.entity.User;
 import com.vorova.todo.service.abstracts.RoleService;
@@ -42,21 +43,24 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
         }
     }
 
-    private void addUsers(int count) {
+    private void addUsers(int count) throws UserRegException {
 
         for (int i = 1; i <= count; i++){
             User user = new User();
 
-            user.setUsername("name" + i);
             user.setEmail(i + "@mail.ru");
-            user.setPassword("pass" + i);
+            user.setPassword("password" + i);
 
-            userService.addUser(user);
+            try {
+                userService.addUser(user);
+            } catch (UserRegException ex) {
+                throw new UserRegException(ex.getMessage());
+            }
         }
     }
 
     @Override
-    public void run(ApplicationArguments args) {
+    public void run(ApplicationArguments args) throws UserRegException {
         addRoles();
         addUsers(25);
     }

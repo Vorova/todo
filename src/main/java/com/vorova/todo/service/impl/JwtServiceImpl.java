@@ -7,7 +7,6 @@ import com.vorova.todo.service.abstracts.JwtService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -40,8 +39,8 @@ public class JwtServiceImpl implements JwtService {
                 .setSubject(user.getEmail())
                 .setExpiration(accessExpiration)
                 .signWith(jwtAccessesSecret)
-                .claim("roles", user.getAuthorities())
-                .claim("username", user.getUsername())
+                .claim("authorities", user.getAuthorities())
+                .claim("name", user.getUsername())
                 .compact();
     }
 
@@ -80,14 +79,11 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public JwtAuthentication generateAuthentication(Claims claims) {
         JwtAuthentication jwtAuthentication = new JwtAuthentication();
-        jwtAuthentication.setRoles(getRolesForGenerateAuthentication(claims));
+            jwtAuthentication.setAuthorities(new HashSet<Role>(claims.get("authorities", Set.class)));
+        jwtAuthentication.setName(claims.get("name", String.class));
         return jwtAuthentication;
     }
 
-    private Set<Role> getRolesForGenerateAuthentication(Claims claims) {
-        List<Role> roleList = claims.get("roles", List.class);
-        return new HashSet<>(roleList);
-    }
 
     private Claims getClaims(String token, Key secret) {
         return Jwts.parserBuilder()

@@ -1,10 +1,12 @@
 package com.vorova.todo.service.impl;
 
 import com.vorova.todo.dao.abstracts.UserDao;
+import com.vorova.todo.exception.UserRegException;
 import com.vorova.todo.models.entity.Role;
 import com.vorova.todo.models.entity.User;
 import com.vorova.todo.service.abstracts.RoleService;
 import com.vorova.todo.service.abstracts.UserService;
+import com.vorova.todo.service.util.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,22 +27,29 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserDao userDao;
     private final PasswordEncoder passwordEncoder;
     private final RoleService roleService;
+    private final UserUtil userUtil;
 
     @Autowired
-    public UserServiceImpl(UserDao userDao, PasswordEncoder passwordEncoder, RoleService roleService) {
+    public UserServiceImpl(UserDao userDao, PasswordEncoder passwordEncoder, RoleService roleService, UserUtil userUtil) {
         this.userDao = userDao;
         this.passwordEncoder = passwordEncoder;
         this.roleService = roleService;
+        this.userUtil = userUtil;
     }
 
     @Transactional
-    public void addUser(User user) {
-        // Todo осуществить проверку данных пользователя
-        /*
-         * Осуществить проверку email на корректность и уникальность.
-         * Проверить nickname на уникальность и корректность.
-         * Проверить пароль на надёжность.
-         */
+    public void addUser(User user) throws UserRegException {
+
+        if (getByEmail(user.getEmail()).isPresent()) {
+            throw new UserRegException("Not unique Email");
+        }
+        if (!userUtil.isCorrectEmail(user.getEmail())) {
+            throw new UserRegException("In correct email");
+        }
+        if (!userUtil.isCorrectPassword(user.getPassword())) {
+            throw new UserRegException("Unreliable password");
+        }
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setDatePersist(Date.from(Instant.now()));
 
@@ -54,17 +63,17 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public Optional<User> getByLogin(String login) {
-        return userDao.findByUsername(login);
+    public Optional<User> getByEmail(String email) {
+        return userDao.findByUsername(email);
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = userDao.findByUsername(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<User> user = userDao.findByUsername(email);
         if(user.isPresent()) {
             return user.get();
         } else {
-            throw new UsernameNotFoundException("User with name " + username + " not found");
+            throw new UsernameNotFoundException("User with name " + email + " not found");
         }
     }
 }
