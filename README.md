@@ -1,4 +1,4 @@
-ПРОДАКШЕН:
- - Сократить время жизни accesses токена до 5 минут.
-   com.vorova.todo.service.impl.JwtServiceImpl.generateAccessesToken(); 
- - Установить Redis на сервер, для package com.vorova.todo.service.impl; Вместо refreshStorage;
+РџР РћР”РђРљРЁР•Рќ:
+- РЎРѕРєСЂР°С‚РёС‚СЊ РІСЂРµРјСЏ Р¶РёР·РЅРё accesses С‚РѕРєРµРЅР° РґРѕ 5 РјРёРЅСѓС‚.
+  com.vorova.todo.service.impl.JwtServiceImpl.generateAccessesToken();
+- РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Redis РЅР° СЃРµСЂРІРµСЂ, РґР»СЏ package com.vorova.todo.service.impl; Р’РјРµСЃС‚Рѕ refreshStorage;
