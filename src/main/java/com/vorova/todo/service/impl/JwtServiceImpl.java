@@ -7,6 +7,7 @@ import com.vorova.todo.service.abstracts.JwtService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +34,6 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public String generateAccessesToken(User user) {
         final LocalDateTime now = LocalDateTime.now();
-        // todo заменить в продакшене на 5 минут
         final Instant accessesExpirationInstant = now.plusDays(2).atZone(ZoneId.systemDefault()).toInstant();
         final Date accessExpiration = Date.from(accessesExpirationInstant);
         return Jwts.builder()
@@ -85,7 +85,6 @@ public class JwtServiceImpl implements JwtService {
     }
 
     private Set<Role> getRolesForGenerateAuthentication(Claims claims) {
-        // todo посмотреть warning
         List<Role> roleList = claims.get("roles", List.class);
         return new HashSet<>(roleList);
     }

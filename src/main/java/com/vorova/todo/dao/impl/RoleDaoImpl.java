@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.Optional;
 
 @Repository
 public class RoleDaoImpl implements RoleDao {
@@ -21,12 +22,17 @@ public class RoleDaoImpl implements RoleDao {
     }
 
     @Override
-    public Role getRoleByAuthority(String authority) {
-        return entityManager.createQuery("""
-            SELECT r FROM Role r WHERE r.authority = :authority
-        """, Role.class)
-                .setParameter("authority", authority)
-                .getSingleResult();
+    public Optional<Role> getRoleByAuthority(String authority) {
+        try {
+            return Optional.of(
+                    entityManager.createQuery("""
+                            SELECT r FROM Role r WHERE r.authority = :authority
+                        """, Role.class)
+                    .setParameter("authority", authority)
+                    .getSingleResult());
+        } catch (Exception ex) {
+            return Optional.empty();
+        }
     }
 
 }

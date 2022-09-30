@@ -36,7 +36,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Transactional
     public void addUser(User user) {
         // Todo осуществить проверку данных пользователя
-        // todo осуществить проверку данных пользователя
         /*
          * Осуществить проверку email на корректность и уникальность.
          * Проверить nickname на уникальность и корректность.

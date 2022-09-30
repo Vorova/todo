@@ -27,7 +27,7 @@ public class UserDaoImpl implements UserDao {
     public Optional<User> findByUsername(String username) {
         try {
             return Optional.of(entityManager.createQuery("""
-                SELECT u FROM User u JOIN FETCH u.roles WHERE u.username = :username OR u.email = :username
+                SELECT u FROM User u JOIN FETCH u.authorities WHERE u.username = :username OR u.email = :username
                 """, User.class)
                     .setParameter("username", username)
                     .getSingleResult());

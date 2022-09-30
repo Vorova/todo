@@ -6,6 +6,8 @@ import com.vorova.todo.service.abstracts.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class RoleServiceImpl implements RoleService {
 
@@ -21,9 +23,9 @@ public class RoleServiceImpl implements RoleService {
          roleDao.addRole(role);
     }
 
-    // todo Вернуть Optional
     public Role getRoleByAuthority(String authority) {
-        return roleDao.getRoleByAuthority(authority);
+        Optional<Role> role = roleDao.getRoleByAuthority(authority);
+        return role.orElse(null);
     }
 
 }

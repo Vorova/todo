@@ -24,8 +24,6 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder encoder;
     private final JwtService jwtService;
 
-    // todo понять и осознять для чего нужен refreshStarage
-    // todo заменить данное хранилище на хранилище из продакшена
     private final Map<String, String> refreshStorage = new HashMap<>();
 
     @Autowired
