@@ -25,7 +25,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtResponseDto> login(@RequestBody JwtRequestDto requestDto) throws AuthException {
+    public ResponseEntity<?> login(@RequestBody JwtRequestDto requestDto) throws AuthException {
+        // todo проверка на авторизованность , и если да, то развернуть
         JwtResponseDto jwtResponseDto = authService.login(requestDto);
         return ResponseEntity.ok(jwtResponseDto);
     }

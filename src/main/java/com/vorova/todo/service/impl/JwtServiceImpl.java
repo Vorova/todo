@@ -40,7 +40,7 @@ public class JwtServiceImpl implements JwtService {
                 .setSubject(user.getEmail())
                 .setExpiration(accessExpiration)
                 .signWith(jwtAccessesSecret)
-                .claim("roles", user.getRoles())
+                .claim("roles", user.getAuthorities())
                 .claim("username", user.getUsername())
                 .compact();
     }

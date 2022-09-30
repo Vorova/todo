@@ -45,10 +45,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setDatePersist(Date.from(Instant.now()));
 
-        if(user.getRoles() == null) {
+        if(user.getAuthorities() == null) {
             List<Role> roles = new ArrayList<>();
             roles.add(roleService.getRoleByAuthority("ROLE_USER"));
-            user.setRoles(roles);
+            user.setAuthorities(roles);
         }
 
         userDao.addUser(user);

@@ -21,10 +21,6 @@ public class Role implements GrantedAuthority {
     @Column(name = "authority", length = 20)
     private String authority;
 
-    public Role(String authority) {
-        this.authority = authority;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

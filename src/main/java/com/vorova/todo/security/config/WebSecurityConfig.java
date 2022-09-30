@@ -34,10 +34,11 @@ public class WebSecurityConfig implements AuthenticationSuccessHandler {
             .authorizeHttpRequests(
                 auth -> auth
                     .antMatchers("/api/auth/**").permitAll()
+                    .antMatchers("/api/auth/login").authenticated()
                     .antMatchers("/api/**").authenticated()
                     .antMatchers("inbox").hasAnyRole("USER", "ADMIN")
                     .and()
-                    .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                    .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
             ).formLogin().successHandler(this).permitAll();
         return http.build();
     }

@@ -41,11 +41,11 @@ public class User implements UserDetails {
         joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
         inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
     @ToString.Exclude
-    private List<Role> roles;
+    private List<Role> authorities;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles;
+        return authorities;
     }
 
     @Override
