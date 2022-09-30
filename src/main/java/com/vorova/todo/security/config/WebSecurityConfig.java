@@ -1,5 +1,7 @@
 package com.vorova.todo.security.config;
 
+import com.vorova.todo.security.JwtFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -9,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,22 +21,24 @@ import java.util.Set;
 @EnableWebSecurity
 public class WebSecurityConfig implements AuthenticationSuccessHandler {
 
+    private final JwtFilter jwtFilter;
+
+    @Autowired
+    public WebSecurityConfig(JwtFilter jwtFilter) {
+        this.jwtFilter = jwtFilter;
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-        http.csrf().disable(); // todo разобраться с этим токеном
-
-        http.authorizeRequests()
-                .antMatchers("/api/general/**").permitAll()
-                .antMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
-                .antMatchers("/api/task/**").hasAnyRole("USER", "ADMIN")
-                .antMatchers("/inbox").hasAnyRole("USER", "ADMIN");
-
-        http.
-                formLogin()
-                .successHandler(this)
-                .permitAll();
-
+        http.csrf().disable()
+            .authorizeHttpRequests(
+                auth -> auth
+                    .antMatchers("/auth/**").permitAll()
+                    .antMatchers("/api/**").authenticated()
+                    .antMatchers("inbox").hasAnyRole("USER", "ADMIN")
+                    .and()
+                    .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+            ).formLogin().successHandler(this).permitAll();
         return http.build();
     }
 
