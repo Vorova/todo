@@ -9,9 +9,15 @@ import lombok.Setter;
 @Setter
 public class JwtRequestDto {
 
-    @Schema(title = "email")
+    @Schema(title = "email",
+            description = "Валидный email")
     private String email;
-    @Schema(title = "password")
+    @Schema(title = "password",
+            description = """
+                    Латиница, цифры, точка, тире, подчеркивание.
+                    От 6 до 20 символов.
+                    [a-zA-Z\\d._\\-]{6,20}
+                    """)
     private String password;
 
 }

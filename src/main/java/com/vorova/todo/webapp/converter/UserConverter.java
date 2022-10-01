@@ -1,4 +1,4 @@
-package com.vorova.todo.webapp.converters;
+package com.vorova.todo.webapp.converter;
 
 import com.vorova.todo.models.dto.UserRegDto;
 import com.vorova.todo.models.entity.User;

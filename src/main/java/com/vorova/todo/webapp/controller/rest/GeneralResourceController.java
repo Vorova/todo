@@ -1,9 +1,9 @@
-package com.vorova.todo.webapp.controllers.rest;
+package com.vorova.todo.webapp.controller.rest;
 
 import com.vorova.todo.exception.UserRegException;
 import com.vorova.todo.models.dto.UserRegDto;
 import com.vorova.todo.service.abstracts.UserService;
-import com.vorova.todo.webapp.converters.UserConverter;
+import com.vorova.todo.webapp.converter.UserConverter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -11,7 +11,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Общий контроллер", description = "Для общих действий, без авторизации")
 @RestController

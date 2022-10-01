@@ -1,4 +1,4 @@
-package com.vorova.todo.webapp.controllers.rest;
+package com.vorova.todo.webapp.controller.rest;
 
 import com.vorova.todo.models.dto.JwtRequestDto;
 import com.vorova.todo.models.dto.JwtResponseDto;
