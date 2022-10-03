@@ -41,9 +41,9 @@ public class GeneralResourceController {
     public ResponseEntity<?> addUser(@RequestBody UserRegDto userReg) {
         try {
             userService.addUser(userConverter.userRegDtoToUser(userReg));
+            return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (UserRegException exc) {
-            return new ResponseEntity<>(exc.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(exc.getErrors(), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }

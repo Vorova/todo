@@ -79,7 +79,7 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public JwtAuthentication generateAuthentication(Claims claims) {
         JwtAuthentication jwtAuthentication = new JwtAuthentication();
-            jwtAuthentication.setAuthorities(new HashSet<Role>(claims.get("authorities", Set.class)));
+            jwtAuthentication.setAuthorities(new HashSet<Role>(claims.get("authorities", List.class)));
         jwtAuthentication.setName(claims.get("name", String.class));
         return jwtAuthentication;
     }

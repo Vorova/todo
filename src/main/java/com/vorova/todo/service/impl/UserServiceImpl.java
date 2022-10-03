@@ -2,6 +2,7 @@ package com.vorova.todo.service.impl;
 
 import com.vorova.todo.dao.abstracts.UserDao;
 import com.vorova.todo.exception.UserRegException;
+import com.vorova.todo.exception.error.ErrorUserReg;
 import com.vorova.todo.models.entity.Role;
 import com.vorova.todo.models.entity.User;
 import com.vorova.todo.service.abstracts.RoleService;
@@ -40,14 +41,20 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Transactional
     public void addUser(User user) throws UserRegException {
 
+        List<ErrorUserReg> errors = new ArrayList<>();
+
         if (getByEmail(user.getEmail()).isPresent()) {
-            throw new UserRegException("Not unique Email");
+            errors.add(new ErrorUserReg("Not unique Email", 1));
         }
         if (!userUtil.isCorrectEmail(user.getEmail())) {
-            throw new UserRegException("In correct email");
+            errors.add(new ErrorUserReg("In correct email", 2));
         }
         if (!userUtil.isCorrectPassword(user.getPassword())) {
-            throw new UserRegException("Unreliable password");
+            errors.add(new ErrorUserReg("Unreliable password", 3));
+        }
+
+        if (!errors.isEmpty()) {
+            throw new UserRegException(errors);
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
