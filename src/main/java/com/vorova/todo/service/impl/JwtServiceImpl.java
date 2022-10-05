@@ -20,25 +20,25 @@ import java.util.*;
 @Service
 public class JwtServiceImpl implements JwtService {
 
-    private final SecretKey jwtAccessesSecret;
+    private final SecretKey jwtAccessSecret;
     private final SecretKey jwtRefreshSecret;
 
     public JwtServiceImpl(
-            @Value("${jwt.secret.access}") String jwtAccessesSecret,
+            @Value("${jwt.secret.access}") String jwtAccessSecret,
             @Value("${jwt.secret.refresh}") String jwtRefreshSecret) {
-        this.jwtAccessesSecret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtAccessesSecret));
+        this.jwtAccessSecret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtAccessSecret));
         this.jwtRefreshSecret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtRefreshSecret));
     }
 
     @Override
-    public String generateAccessesToken(User user) {
+    public String generateAccessToken(User user) {
         final LocalDateTime now = LocalDateTime.now();
         final Instant accessesExpirationInstant = now.plusDays(2).atZone(ZoneId.systemDefault()).toInstant();
         final Date accessExpiration = Date.from(accessesExpirationInstant);
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .setExpiration(accessExpiration)
-                .signWith(jwtAccessesSecret)
+                .signWith(jwtAccessSecret)
                 .claim("authorities", user.getAuthorities())
                 .claim("name", user.getUsername())
                 .compact();
@@ -57,8 +57,8 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public boolean validateAccessesToken(String accessToken) {
-        return validateToken(accessToken, jwtAccessesSecret);
+    public boolean validateAccessToken(String accessToken) {
+        return validateToken(accessToken, jwtAccessSecret);
     }
 
     @Override
@@ -67,8 +67,8 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public Claims getAccessesClaims(String accessesToken) {
-        return getClaims(accessesToken, jwtAccessesSecret);
+    public Claims getAccessClaims(String accessToken) {
+        return getClaims(accessToken, jwtAccessSecret);
     }
 
     @Override

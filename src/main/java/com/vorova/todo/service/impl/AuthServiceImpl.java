@@ -36,7 +36,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userService.getByEmail(requestDto.getEmail())
             .orElseThrow(() -> new AuthException("User with email " + requestDto.getEmail() + " not found"));
         if(encoder.matches(requestDto.getPassword(), user.getPassword())) {
-            final String accessesToken = jwtService.generateAccessesToken(user);
+            final String accessesToken = jwtService.generateAccessToken(user);
             final String refreshToken = jwtService.generateRefreshToken(user);
             refreshStorage.put(user.getEmail(), refreshToken);
             return new JwtResponseDto(accessesToken, refreshToken);
@@ -54,7 +54,7 @@ public class AuthServiceImpl implements AuthService {
             if(saveRefreshStorage != null && saveRefreshStorage.equals(refreshToken)) {
                 User user = userService.getByEmail(email)
                         .orElseThrow(() -> new AuthException(("User with name " + email + " not found")));
-                String accessToken = jwtService.generateAccessesToken(user);
+                String accessToken = jwtService.generateAccessToken(user);
                 return new JwtResponseDto(accessToken, null);
             }
             throw new AuthException("Invalid refresh token");
@@ -71,7 +71,7 @@ public class AuthServiceImpl implements AuthService {
             if(saveRefreshStorage != null && saveRefreshStorage.equals(refreshToken)) {
                 User user = userService.getByEmail(email)
                         .orElseThrow(() -> new AuthException("User with name " + email + " not found"));
-                String accessToken = jwtService.generateAccessesToken(user);
+                String accessToken = jwtService.generateAccessToken(user);
                 String newRefreshToken = jwtService.generateRefreshToken(user);
                 refreshStorage.put(user.getEmail(), newRefreshToken);
                 return new JwtResponseDto(accessToken, newRefreshToken);

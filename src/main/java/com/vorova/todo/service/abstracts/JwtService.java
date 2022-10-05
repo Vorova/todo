@@ -6,15 +6,15 @@ import io.jsonwebtoken.Claims;
 
 public interface JwtService {
 
-    String generateAccessesToken(User user);
+    String generateAccessToken(User user);
 
     String generateRefreshToken(User user);
 
-    boolean validateAccessesToken(String accessToken);
+    boolean validateAccessToken(String accessToken);
 
     boolean validateRefreshToken(String refreshToken);
 
-    Claims getAccessesClaims(String accessesToken);
+    Claims getAccessClaims(String accessToken);
 
     Claims getRefreshClaims(String refreshToken);
 

@@ -33,7 +33,7 @@ public class AuthController {
 
     @Operation(summary = "Авторизация пользователя")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "205", description = "Успешная авторизация, JWT выданы"),
+            @ApiResponse(responseCode = "200", description = "Успешная авторизация, JWT выданы"),
             @ApiResponse(responseCode = "401", description = "Авторизация не удалась"),
             @ApiResponse(responseCode = "403", description = "Пользователь уже авторизован")
     })
@@ -44,7 +44,7 @@ public class AuthController {
         }
         try {
             JwtResponseDto jwtResponseDto = authService.login(requestDto);
-            return ResponseEntity.ok(jwtResponseDto);
+            return new ResponseEntity<>(jwtResponseDto, HttpStatus.OK);
         } catch (AuthException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
         }

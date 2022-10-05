@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,15 +31,35 @@ public class GeneralResourceController {
         this.userConverter = userConverter;
     }
 
+    @Operation(summary = "Проверка аутентификации")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "200", description = "Авторизован"),
+            @ApiResponse(responseCode = "403", description = "Не авторизован")
+    })
+    @PostMapping("/check_auth")
+    public ResponseEntity<?> checkAuth() {
+        if (SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+    }
+
     @Operation(summary = "Регистрация нового пользователя")
     @ApiResponses( value = {
             @ApiResponse(responseCode = "201", description = "Пользователь успешно зарегистрирован"),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Невозможно зарегистрировать пользователя (Не корректные данные)")
+                    description = "Невозможно зарегистрировать пользователя (Не корректные данные)"),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Авторизованный пользователь не может регистрировать нового пользователя"
+            )
     })
     @PostMapping("/add_user")
     public ResponseEntity<?> addUser(@RequestBody UserRegDto userReg) {
+        if (SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         try {
             userService.addUser(userConverter.userRegDtoToUser(userReg));
             return new ResponseEntity<>(HttpStatus.CREATED);

@@ -26,6 +26,12 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
         this.roleService = roleService;
     }
 
+    @Override
+    public void run(ApplicationArguments args) throws UserRegException {
+        addRoles();
+        addUsers(20);
+    }
+
     private void addRoles() {
 
         Role admin = new Role();
@@ -48,7 +54,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
         for (int i = 1; i <= count; i++){
             User user = new User();
 
-            user.setEmail(i + "@mail.ru");
+            user.setEmail("email" + i + "@mail.ru");
             user.setPassword("password" + i);
 
             try {
@@ -59,9 +65,4 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
         }
     }
 
-    @Override
-    public void run(ApplicationArguments args) throws UserRegException {
-        addRoles();
-        addUsers(25);
-    }
 }
