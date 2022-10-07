@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -31,13 +31,13 @@ public class Task {
     private String description;
 
     @Column(name = "date_persist")
-    private Date datePersist;
+    private LocalDateTime datePersist;
 
     @Column(name = "date_last_change")
-    private Date dateLastChange;
+    private LocalDateTime dateLastChange;
 
     @Column(name = "date_deadline")
-    private Date dateDeadline;
+    private LocalDateTime dateDeadline;
 
     @Column(name = "is_repeat")
     private boolean isRepeat;

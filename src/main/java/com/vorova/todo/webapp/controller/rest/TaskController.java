@@ -1,7 +1,7 @@
 package com.vorova.todo.webapp.controller.rest;
 
 import com.vorova.todo.exception.CheckRequestException;
-import com.vorova.todo.models.dto.TaskCreateDto;
+import com.vorova.todo.models.dto.TaskDto;
 import com.vorova.todo.models.entity.Task;
 import com.vorova.todo.service.abstracts.TaskService;
 import com.vorova.todo.service.abstracts.UserService;
@@ -38,7 +38,7 @@ public class TaskController {
             @ApiResponse(responseCode = "201", description = "Задача успешно создана"),
             @ApiResponse(responseCode = "400", description = "Задача не создана (не корректные данные)")
     })
-    public ResponseEntity<?> create(@RequestBody TaskCreateDto taskDto) {
+    public ResponseEntity<?> create(@RequestBody TaskDto taskDto) {
         Task task = taskConverter.taskDtoToTask(taskDto);
         task.setUser(userService.getAuthenticatedUser());
         try {

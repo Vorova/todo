@@ -3,11 +3,11 @@ package com.vorova.todo.models.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
-@Schema(name = "Task DTO")
+@Schema(name = "DTO Task")
 @Data
-public class TaskCreateDto {
+public class TaskDto {
     @Schema(title = "title task")
     private String title;
     @Schema(title = "description for task")
@@ -15,5 +15,5 @@ public class TaskCreateDto {
     @Schema(title = "boolean is repeat?")
     private boolean isRepeat;
     @Schema(title = "deadline for the task")
-    private Date dateDeadline;
+    private LocalDateTime dateDeadline;
 }

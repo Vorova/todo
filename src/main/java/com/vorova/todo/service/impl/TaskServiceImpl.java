@@ -8,9 +8,8 @@ import com.vorova.todo.service.abstracts.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -30,7 +29,7 @@ public class TaskServiceImpl implements TaskService {
             errors.add(new TypeErrorDto("Title is not be empty", 1));
         }
         if (task.getDateDeadline() != null) {
-            if ( task.getDateDeadline().toInstant().compareTo(Instant.now()) <= 0) {
+            if (task.getDateDeadline().compareTo(LocalDateTime.now()) <= 0) {
                 errors.add(new TypeErrorDto("In correct date deadline", 2));
             }
         }
@@ -42,8 +41,8 @@ public class TaskServiceImpl implements TaskService {
             throw new CheckRequestException(errors);
         }
 
-        task.setDatePersist(Date.from(Instant.now()));
-        task.setDateLastChange(Date.from(Instant.now()));
+        task.setDatePersist(LocalDateTime.now());
+        task.setDateLastChange(LocalDateTime.now());
 
         taskDao.createTask(task);
     }

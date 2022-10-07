@@ -1,6 +1,6 @@
 package com.vorova.todo.webapp.converter;
 
-import com.vorova.todo.models.dto.TaskCreateDto;
+import com.vorova.todo.models.dto.TaskDto;
 import com.vorova.todo.models.entity.Task;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
@@ -9,6 +9,6 @@ import org.springframework.stereotype.Component;
 @Component
 public abstract class TaskConverter {
 
-    public abstract Task taskDtoToTask(TaskCreateDto taskDto);
+    public abstract Task taskDtoToTask(TaskDto taskDto);
 
 }

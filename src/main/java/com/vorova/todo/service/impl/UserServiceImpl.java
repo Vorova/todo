@@ -17,9 +17,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,7 +58,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setDatePersist(Date.from(Instant.now()));
+        user.setDatePersist(LocalDateTime.now());
 
         if(user.getAuthorities() == null) {
             List<Role> roles = new ArrayList<>();
