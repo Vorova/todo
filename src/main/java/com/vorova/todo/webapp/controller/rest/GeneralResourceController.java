@@ -1,6 +1,6 @@
 package com.vorova.todo.webapp.controller.rest;
 
-import com.vorova.todo.exception.UserRegException;
+import com.vorova.todo.exception.CheckRequestException;
 import com.vorova.todo.models.dto.UserRegDto;
 import com.vorova.todo.service.abstracts.UserService;
 import com.vorova.todo.webapp.converter.UserConverter;
@@ -63,7 +63,7 @@ public class GeneralResourceController {
         try {
             userService.addUser(userConverter.userRegDtoToUser(userReg));
             return new ResponseEntity<>(HttpStatus.CREATED);
-        } catch (UserRegException exc) {
+        } catch (CheckRequestException exc) {
             return new ResponseEntity<>(exc.getErrors(), HttpStatus.BAD_REQUEST);
         }
     }

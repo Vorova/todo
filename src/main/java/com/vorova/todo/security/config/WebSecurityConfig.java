@@ -34,6 +34,7 @@ public class WebSecurityConfig implements AuthenticationSuccessHandler {
             .authorizeHttpRequests(
                 auth -> auth
                     .antMatchers("/api/auth/**").permitAll()
+                    .antMatchers("/api/task/**").hasRole("USER")
                     .antMatchers("/inbox").hasAnyRole("USER", "ADMIN")
                     .and()
                     .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class)

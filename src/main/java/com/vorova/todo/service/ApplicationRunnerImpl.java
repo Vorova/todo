@@ -1,6 +1,6 @@
 package com.vorova.todo.service;
 
-import com.vorova.todo.exception.UserRegException;
+import com.vorova.todo.exception.CheckRequestException;
 import com.vorova.todo.models.entity.Role;
 import com.vorova.todo.models.entity.User;
 import com.vorova.todo.service.abstracts.RoleService;
@@ -27,9 +27,9 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
     }
 
     @Override
-    public void run(ApplicationArguments args) throws UserRegException {
+    public void run(ApplicationArguments args) throws CheckRequestException {
         addRoles();
-        addUsers(20);
+        addUsers(5);
     }
 
     private void addRoles() {
@@ -49,7 +49,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
         }
     }
 
-    private void addUsers(int count) throws UserRegException {
+    private void addUsers(int count) throws CheckRequestException {
 
         for (int i = 1; i <= count; i++){
             User user = new User();
@@ -59,8 +59,8 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
 
             try {
                 userService.addUser(user);
-            } catch (UserRegException ex) {
-                throw new UserRegException(ex.getMessage());
+            } catch (CheckRequestException ex) {
+                throw new CheckRequestException(ex.getMessage());
             }
         }
     }

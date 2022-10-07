@@ -1,14 +1,15 @@
 package com.vorova.todo.service.impl;
 
 import com.vorova.todo.dao.abstracts.UserDao;
-import com.vorova.todo.exception.UserRegException;
-import com.vorova.todo.exception.error.ErrorUserReg;
+import com.vorova.todo.exception.CheckRequestException;
+import com.vorova.todo.models.dto.TypeErrorDto;
 import com.vorova.todo.models.entity.Role;
 import com.vorova.todo.models.entity.User;
 import com.vorova.todo.service.abstracts.RoleService;
 import com.vorova.todo.service.abstracts.UserService;
 import com.vorova.todo.service.util.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -39,22 +40,22 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Transactional
-    public void addUser(User user) throws UserRegException {
+    public void addUser(User user) throws CheckRequestException {
 
-        List<ErrorUserReg> errors = new ArrayList<>();
+        List<TypeErrorDto> errors = new ArrayList<>();
 
         if (getByEmail(user.getEmail()).isPresent()) {
-            errors.add(new ErrorUserReg("Not unique Email", 1));
+            errors.add(new TypeErrorDto("Not unique Email", 1));
         }
         if (!userUtil.isCorrectEmail(user.getEmail())) {
-            errors.add(new ErrorUserReg("In correct email", 2));
+            errors.add(new TypeErrorDto("In correct email", 2));
         }
         if (!userUtil.isCorrectPassword(user.getPassword())) {
-            errors.add(new ErrorUserReg("Unreliable password", 3));
+            errors.add(new TypeErrorDto("Unreliable password", 3));
         }
 
         if (!errors.isEmpty()) {
-            throw new UserRegException(errors);
+            throw new CheckRequestException(errors);
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -81,6 +82,21 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             return user.get();
         } else {
             throw new UsernameNotFoundException("User with name " + email + " not found");
+        }
+    }
+
+    @Override
+    public User getAuthenticatedUser() {
+        if(SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            Optional<User> user = getByEmail(email);
+            if (user.isPresent()) {
+                return user.get();
+            } else {
+                throw new RuntimeException("Authenticated user isn't authenticated");
+            }
+        } else {
+            throw new RuntimeException("Attempt to get user, but user isn't authenticated");
         }
     }
 }
