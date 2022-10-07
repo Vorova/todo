@@ -1,12 +1,14 @@
 package com.vorova.todo.models.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Schema(name = "DTO Task")
 @Data
+@AllArgsConstructor
 public class TaskDto {
     @Schema(title = "title task")
     private String title;
