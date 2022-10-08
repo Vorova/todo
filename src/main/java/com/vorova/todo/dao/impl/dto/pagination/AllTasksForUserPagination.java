@@ -28,7 +28,7 @@ public class AllTasksForUserPagination implements PageDtoDao<TaskDto> {
     @Override
     public int getCountItems(Map<String, Object> params) {
         long longResult = entityManager.createQuery("""
-                                SELECT COUNT(t) as int FROM Task t WHERE t.user.id = :userId
+                                SELECT COUNT(t) FROM Task t WHERE t.user.id = :userId
                                 """, Long.class)
                         .setParameter("userId", params.get("userId"))
                         .getSingleResult();
