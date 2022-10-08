@@ -27,10 +27,11 @@ public class AllTasksForUserPagination implements PageDtoDao<TaskDto> {
 
     @Override
     public int getCountItems(Map<String, Object> params) {
-        return entityManager.createQuery("""
-                                SELECT CAST(COUNT(t) as int) FROM Task t WHERE t.user.id = :userId"""
-                        , Integer.class)
-                .setParameter("userId", params.get("userId"))
-                .getSingleResult();
+        long longResult = entityManager.createQuery("""
+                                SELECT COUNT(t) as int FROM Task t WHERE t.user.id = :userId
+                                """, Long.class)
+                        .setParameter("userId", params.get("userId"))
+                        .getSingleResult();
+        return Math.toIntExact(longResult);
     }
 }
