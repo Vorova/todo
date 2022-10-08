@@ -21,7 +21,7 @@ public class Task {
     @Column(name = "id")
     private long id;
 
-    @Column
+    @Column(name = "is_done")
     private boolean isDone;
 
     @Column(name = "title")
@@ -41,6 +41,9 @@ public class Task {
 
     @Column(name = "is_repeat")
     private boolean isRepeat;
+
+    @Column(name = "repeat")
+    private String repeat;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;

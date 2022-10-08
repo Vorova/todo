@@ -14,8 +14,12 @@ public class TaskDto {
     private String title;
     @Schema(title = "description for task")
     private String description;
+    @Schema(title = "marker - task done")
+    private boolean isDone;
     @Schema(title = "boolean is repeat?")
     private boolean isRepeat;
+    @Schema(title = "string for parse repeat")
+    private String repeat;
     @Schema(title = "deadline for the task")
     private LocalDateTime dateDeadline;
 }
