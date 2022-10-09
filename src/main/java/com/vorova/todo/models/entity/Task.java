@@ -5,8 +5,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Setter
 @Getter
@@ -20,6 +28,9 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private long id;
+
+    @Column(name = "parent_id")
+    private long parentId;
 
     @Column(name = "is_done")
     private boolean isDone;
@@ -39,12 +50,25 @@ public class Task {
     @Column(name = "date_deadline")
     private LocalDateTime dateDeadline;
 
-    @Column(name = "is_repeat")
-    private boolean isRepeat;
-
     @Column(name = "repeat")
     private String repeat;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private User user;
+
+    @Column(name = "next_id_upcoming")
+    private long nextIdUpcoming;
+
+    @Column(name = "next_id_project")
+    private long nextIdProject;
+
+    @OneToMany
+    private List<Label> labels;
+
+    @ManyToOne
+    private Project projectId;
+
+    @ManyToOne
+    private Section sectionId;
+
 }

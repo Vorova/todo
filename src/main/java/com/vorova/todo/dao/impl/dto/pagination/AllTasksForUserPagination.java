@@ -18,7 +18,13 @@ public class AllTasksForUserPagination implements PageDtoDao<TaskDto> {
     @Override
     public List<TaskDto> getItems(Map<String, Object> params) {
         return entityManager.createQuery("""
-                SELECT new com.vorova.todo.models.dto.TaskDto(t.title, t.description, t.isRepeat, t.dateDeadline)
+                SELECT new com.vorova.todo.models.dto.TaskDto(
+                t.title,
+                t.description, 
+                t.isDone,
+                t.isRepeat, 
+                t.repeat,
+                t.dateDeadline)
                 FROM Task t WHERE t.user.id = :userId
                 """, TaskDto.class)
                 .setParameter("userId", params.get("userId"))
