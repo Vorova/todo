@@ -34,9 +34,6 @@ public class Project {
     @ManyToOne
     private User author;
 
-    @OneToMany
-    private List<Task> tasks;
-
     @Column(name = "next_project_id")
     private long nextProjectId;
 
@@ -45,5 +42,8 @@ public class Project {
 
     @OneToMany(mappedBy = "project")
     private List<Section> sections;
+
+    @Column(name = "id_first_section")
+    private long idFirstSection;
 
 }

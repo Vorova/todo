@@ -6,7 +6,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class CheckRequestException extends Exception {
+public class CheckRequestException extends RuntimeException {
 
     private List<TypeErrorDto> errors;
 

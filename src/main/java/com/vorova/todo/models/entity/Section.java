@@ -26,7 +26,7 @@ public class Section {
     private long id;
 
     @Column(name = "title")
-    private String name;
+    private String title;
 
     @Column(name = "next_id_section")
     private long nextIdSection;
@@ -36,5 +36,8 @@ public class Section {
 
     @ManyToOne
     private Project project;
+
+    @ManyToOne
+    private User author;
 
 }

@@ -53,9 +53,6 @@ public class Task {
     @Column(name = "repeat")
     private String repeat;
 
-    @ManyToOne
-    private User user;
-
     @Column(name = "next_id_upcoming")
     private long nextIdUpcoming;
 
@@ -66,9 +63,12 @@ public class Task {
     private List<Label> labels;
 
     @ManyToOne
-    private Project projectId;
+    private User user;
 
     @ManyToOne
-    private Section sectionId;
+    private Project project;
+
+    @ManyToOne
+    private Section section;
 
 }

@@ -1,7 +1,9 @@
 package com.vorova.todo.models.entity;
 
-import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -29,9 +31,14 @@ public class User implements UserDetails {
     @Column(name = "password")
     private String password;
 
-    @CreatedDate
     @Column(name = "date_persist")
     private LocalDateTime datePersist;
+
+    @Column(name = "id_first_project")
+    private long idFirstProject;
+
+    @Column(name = "id_first_section")
+    private long idFirstSection;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",

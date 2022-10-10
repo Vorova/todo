@@ -61,7 +61,7 @@ public class GeneralResourceController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         try {
-            userService.addUser(userConverter.userRegDtoToUser(userReg));
+            userService.add(userConverter.userRegDtoToUser(userReg));
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (CheckRequestException exc) {
             return new ResponseEntity<>(exc.getErrors(), HttpStatus.BAD_REQUEST);

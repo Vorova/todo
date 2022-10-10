@@ -46,7 +46,7 @@ public class TaskController {
         Task task = taskConverter.taskDtoToTask(taskDto);
         task.setUser(userService.getAuthenticatedUser());
         try {
-            taskService.createTask(task);
+            taskService.add(task);
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (CheckRequestException ex) {
             return new ResponseEntity<>(ex.getErrors(), HttpStatus.BAD_REQUEST);
