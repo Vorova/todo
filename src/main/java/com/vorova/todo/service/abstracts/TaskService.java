@@ -4,6 +4,7 @@ import com.vorova.todo.exception.CheckRequestException;
 import com.vorova.todo.models.entity.Task;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 public interface TaskService {
@@ -14,4 +15,6 @@ public interface TaskService {
 
     @Transactional
     Task update(Task task);
+
+    List<Task> getAllTasksByUserId(long id);
 }

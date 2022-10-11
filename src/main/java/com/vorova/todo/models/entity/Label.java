@@ -34,6 +34,9 @@ public class Label {
     @Column(name = "next_id")
     private long nextId;
 
+    @Column(name = "is_first")
+    private boolean isFirst;
+
     @ManyToOne
     private User author;
 

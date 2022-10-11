@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -39,6 +40,7 @@ public class TaskDaoImpl implements TaskDao {
     }
 
     @Override
+    @Transactional
     public Task update(Task task) {
         entityManager.merge(task);
         entityManager.flush();
@@ -46,7 +48,7 @@ public class TaskDaoImpl implements TaskDao {
     }
 
     @Override
-    public Optional<Task> getLastTask(Project project, Section section, long userId) {
+    public Optional<Task> getLastTask(Project project, Section section, long userId, long parentId) {
         String projectId = project == null ? "IS NULL" : "= " + project.getId();
         String sectionId = section == null ? "IS NULL" : "= " + section.getId();
 
@@ -55,8 +57,9 @@ public class TaskDaoImpl implements TaskDao {
             WHERE t.project.id %s
             AND t.section.id %s
             AND t.user.id = %s
+            AND t.parentId = %s
             AND t.idNextTask = 0
-            """.formatted(projectId, sectionId, userId);
+            """.formatted(projectId, sectionId, userId, parentId);
         try {
             return Optional.of(entityManager.createQuery(hql, Task.class)
                     .getSingleResult());
@@ -64,5 +67,14 @@ public class TaskDaoImpl implements TaskDao {
             return Optional.empty();
         }
 
+    }
+
+    @Override
+    public List<Task> getAllTasksByUserId(long userId) {
+        return entityManager.createQuery("""
+                SELECT t FROM Task t WHERE t.user.id = :userId
+                """, Task.class)
+                .setParameter("userId", userId)
+                .getResultList();
     }
 }

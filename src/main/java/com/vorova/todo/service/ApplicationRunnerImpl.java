@@ -1,11 +1,13 @@
 package com.vorova.todo.service;
 
 import com.vorova.todo.exception.CheckRequestException;
+import com.vorova.todo.models.entity.Label;
 import com.vorova.todo.models.entity.Project;
 import com.vorova.todo.models.entity.Role;
 import com.vorova.todo.models.entity.Section;
 import com.vorova.todo.models.entity.Task;
 import com.vorova.todo.models.entity.User;
+import com.vorova.todo.service.abstracts.LabelService;
 import com.vorova.todo.service.abstracts.ProjectService;
 import com.vorova.todo.service.abstracts.RoleService;
 import com.vorova.todo.service.abstracts.SectionService;
@@ -17,6 +19,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -36,15 +39,17 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
     private final Environment environment;
     private final ProjectService projectService;
     private final SectionService sectionService;
+    private final LabelService labelService;
 
     @Autowired
-    public ApplicationRunnerImpl(UserService userService, RoleService roleService, TaskService taskService, Environment environment, ProjectService projectService, SectionService sectionService) {
+    public ApplicationRunnerImpl(UserService userService, RoleService roleService, TaskService taskService, Environment environment, ProjectService projectService, SectionService sectionService, LabelService labelService) {
         this.userService = userService;
         this.roleService = roleService;
         this.taskService = taskService;
         this.environment = environment;
         this.projectService = projectService;
         this.sectionService = sectionService;
+        this.labelService = labelService;
     }
 
     @Override
@@ -143,6 +148,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
             for (Project project : projects) {
                 List<Section> sections = sectionService.getSectionsByProjectId(project.getId());
                 for (Section section : sections) {
+                    long parentId = 0;
                     for(int i = 0; i < random(1, 5); i++) {
                         Task task = new Task();
                         task.setUser(user);
@@ -150,7 +156,18 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
                         task.setDescription("Some description");
                         task.setProject(random(1, 10) < 3 ? null : project);
                         task.setSection(random(1,10) < 3 || task.getProject() == null ? null : section);
-                        taskService.add(task);
+                        task.setParentId(parentId);
+
+                        if(random(1, 100) < 50) {
+                            LocalDateTime now = LocalDateTime.now();
+                            task.setDateDeadline(now.plusDays(random(1, 10)));
+                        }
+                        if(random(1, 100) < 50) {
+                            task.setRepeat("repeat");
+                        }
+
+                        Task persistedTask = taskService.add(task);
+                        parentId = random(1, 100) < 25 ? persistedTask.getId() : 0;
                     }
                 }
             }
@@ -158,12 +175,32 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
     }
 
     private void addLabels() {
-        // todo добавить labels
+        List<User> users = userService.getAllUsers();
+        // Создание labels;
+        for (User user : users) {
+            for (int i = 0; i < random(0, 5); i++) {
+                Label label = new Label();
+                label.setTitle("label #" + i + " for " + user.getEmail());
+                label.setColor("green");
+                label.setAuthor(user);
+                labelService.add(label);
+            }
+            // Внедрение labels в таски
+            List<Task> tasks = taskService.getAllTasksByUserId(user.getId());
+            List<Label> labels = labelService.getAllLabelsByUserId(user.getId());
+            for (Task task : tasks) {
+                List<Label> labelsForTask = new ArrayList<>();
+                for (Label label : labels) {
+                    if(random(1,100) < 50) labelsForTask.add(label);
+                }
+                task.setLabels(labelsForTask);
+                taskService.update(task);
+            }
+        }
     }
 
     int random(int min, int max) {
         max -= min;
         return (int) (Math.random() * ++max) + min;
     }
-
 }

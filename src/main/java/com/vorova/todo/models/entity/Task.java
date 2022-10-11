@@ -10,8 +10,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,7 +29,7 @@ public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private long id;
+    private Long id;
 
     @Column(name = "parent_id")
     private long parentId;
@@ -59,7 +61,11 @@ public class Task {
     @Column(name = "id_next_task")
     private long idNextTask;
 
-    @OneToMany
+    @ManyToMany
+    @JoinTable(name = "tasks_labels",
+        joinColumns = @JoinColumn(name = "task_id"),
+        inverseJoinColumns = @JoinColumn(name = "label_id")
+    )
     private List<Label> labels;
 
     @ManyToOne
@@ -70,5 +76,4 @@ public class Task {
 
     @ManyToOne
     private Section section;
-
 }

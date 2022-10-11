@@ -3,7 +3,6 @@ package com.vorova.todo.service.impl;
 import com.vorova.todo.dao.abstracts.TaskDao;
 import com.vorova.todo.exception.CheckRequestException;
 import com.vorova.todo.models.dto.TypeErrorDto;
-import com.vorova.todo.models.entity.Label;
 import com.vorova.todo.models.entity.Project;
 import com.vorova.todo.models.entity.Section;
 import com.vorova.todo.models.entity.Task;
@@ -37,6 +36,7 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public Task add(Task task) throws CheckRequestException {
         List<TypeErrorDto> errors = new ArrayList<>();
+        task.setId(null);
 
         if (task.getTitle().isEmpty() || task.getTitle() == null) {
             errors.add(new TypeErrorDto("Title is not be empty", 1));
@@ -49,17 +49,19 @@ public class TaskServiceImpl implements TaskService {
         if (task.getUser() == null) {
             errors.add(new TypeErrorDto("Not association user for the task", 3));
         }
-        if (task.getLabels() != null) {
-            List<Label> newLabels = new ArrayList<>();
-            for (Label label : task.getLabels()) {
-                if (label.getAuthor() == task.getUser()) {
-                    newLabels.add(label);
-                }
-            }
-            task.setLabels(newLabels);
-        }
+
         if (!errors.isEmpty()) {
             throw new CheckRequestException(errors);
+        }
+
+        if (task.getParentId() != 0) {
+            Task parentTask = getTaskById(task.getParentId()).orElse(null);
+            if(parentTask == null) {
+                task.setParentId(0);
+            } else {
+                task.setProject(parentTask.getProject());
+                task.setSection(parentTask.getSection());
+            }
         }
 
         // проверка на принадлежность секции к проекту и наоборот
@@ -99,7 +101,12 @@ public class TaskServiceImpl implements TaskService {
         if (task.getIdNextTask() != 0 && getTaskById(task.getIdNextTask()).isEmpty()) {
             task.setIdNextTask(0);
         }
-        Optional<Task> lastTaskOptional = getLastTask(task.getProject(), task.getSection(), task.getUser().getId());
+        Optional<Task> lastTaskOptional = getLastTask(
+                task.getProject(),
+                task.getSection(),
+                task.getUser().getId(),
+                task.getParentId()
+        );
         Task persistedTask = taskDao.persist(task);
 
         if(lastTaskOptional.isPresent()) {
@@ -119,8 +126,13 @@ public class TaskServiceImpl implements TaskService {
         return taskDao.update(task);
     }
 
-    private Optional<Task> getLastTask(Project project, Section section, long userId) {
-        return taskDao.getLastTask(project, section, userId);
+    @Override
+    public List<Task> getAllTasksByUserId(long userId) {
+        return taskDao.getAllTasksByUserId(userId);
+    }
+
+    private Optional<Task> getLastTask(Project project, Section section, long userId, long parentId) {
+        return taskDao.getLastTask(project, section, userId, parentId);
     }
 
 }
