@@ -34,6 +34,9 @@ public class Section {
     @Column(name = "is_show_tasks")
     private boolean isShowTasks;
 
+    @Column(name = "is_first")
+    private boolean isFirst;
+
     @ManyToOne
     private Project project;
 

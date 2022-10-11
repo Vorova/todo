@@ -53,11 +53,11 @@ public class Task {
     @Column(name = "repeat")
     private String repeat;
 
-    @Column(name = "next_id_upcoming")
-    private long nextIdUpcoming;
+    @Column(name = "is_first")
+    private boolean isFirst;
 
-    @Column(name = "next_id_project")
-    private long nextIdProject;
+    @Column(name = "id_next_task")
+    private long idNextTask;
 
     @OneToMany
     private List<Label> labels;

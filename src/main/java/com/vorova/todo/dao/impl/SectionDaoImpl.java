@@ -23,12 +23,16 @@ public class SectionDaoImpl implements SectionDao {
     }
 
     @Override
-    public Section getLastSectionOfProjectByProjectId(long projectId) {
-        return entityManager.createQuery("""
+    public Optional<Section> getLastSectionOfProjectByProjectId(long projectId) {
+        try {
+            return Optional.of(entityManager.createQuery("""
             SELECT s FROM Section s WHERE s.project.id = :projectId AND s.nextIdSection = 0
             """, Section.class)
-                .setParameter("projectId", projectId)
-                .getSingleResult();
+                    .setParameter("projectId", projectId)
+                    .getSingleResult());
+        } catch (Exception ignored) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -48,19 +52,6 @@ public class SectionDaoImpl implements SectionDao {
     }
 
     @Override
-    public Optional<Section> getSectionById(long sectionId) {
-        try {
-            return Optional.of(entityManager.createQuery("""
-                SELECT s FROM Section s WHERE s.id = :sectionId
-                """, Section.class)
-                .setParameter("sectionId", sectionId)
-                .getSingleResult());
-        } catch (Exception ex) {
-            return Optional.empty();
-        }
-    }
-
-    @Override
     public Section getPrevSection(long sectionId) {
         return entityManager.createQuery("""
                 SELECT s FROM Section s WHERE s.nextIdSection = :sectionId
@@ -70,20 +61,29 @@ public class SectionDaoImpl implements SectionDao {
     }
 
     @Override
-    public long getIdFirstSectionInInboxByUserId(long userId) {
-        return entityManager.createQuery("""
-                SELECT u.idFirstSection FROM User u WHERE u.id = :userId
-                """, Long.class)
-                .setParameter("userId", userId)
-                .getSingleResult();
+    public Optional<Section> getLastSectionInInboxByUserId(long userId) {
+        try {
+            return Optional.of(entityManager.createQuery("""
+                SELECT s FROM Section s WHERE s.nextIdSection = 0 AND s.author.id = :userId
+                """, Section.class)
+                    .setParameter("userId", userId)
+                    .getSingleResult());
+        } catch (Exception ex) {
+            return Optional.empty();
+        }
     }
 
     @Override
-    public Section getLastSectionInInboxByUserId(long userId) {
-        return entityManager.createQuery("""
-                SELECT s FROM Section s WHERE s.nextIdSection = 0 AND s.author.id = :userId
-                """, Section.class)
-                .setParameter("userId", userId)
-                .getSingleResult();
+    public Optional<Section> getSectionById(long sectionId) {
+        try {
+            return Optional.of(entityManager.createQuery("""
+                        SELECT s FROM Section s WHERE s.id = :sectionId
+                        """, Section.class)
+                    .setParameter("sectionId", sectionId)
+                    .getSingleResult());
+        } catch (Exception ignored) {
+            return Optional.empty();
+        }
     }
+
 }

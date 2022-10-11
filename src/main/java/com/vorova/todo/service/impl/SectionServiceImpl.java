@@ -5,11 +5,8 @@ import com.vorova.todo.exception.CheckRequestException;
 import com.vorova.todo.models.dto.TypeErrorDto;
 import com.vorova.todo.models.entity.Project;
 import com.vorova.todo.models.entity.Section;
-import com.vorova.todo.models.entity.Task;
-import com.vorova.todo.models.entity.User;
 import com.vorova.todo.service.abstracts.ProjectService;
 import com.vorova.todo.service.abstracts.SectionService;
-import com.vorova.todo.service.abstracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,13 +20,12 @@ public class SectionServiceImpl implements SectionService {
 
     private final SectionDao sectionDao;
     private final ProjectService projectService;
-    private final UserService userService;
 
     @Autowired
-    public SectionServiceImpl(SectionDao sectionDao, ProjectService projectService, UserService userService) {
+    public SectionServiceImpl(SectionDao sectionDao,
+                              ProjectService projectService) {
         this.sectionDao = sectionDao;
         this.projectService = projectService;
-        this.userService = userService;
     }
 
     @Override
@@ -44,8 +40,6 @@ public class SectionServiceImpl implements SectionService {
         }
 
         Project project;
-
-        // Получаем проект
         if (section.getProject() == null) {
             project = null;
         } else {
@@ -73,47 +67,22 @@ public class SectionServiceImpl implements SectionService {
         return sectionDao.getSectionByProjectId(projectId);
     }
 
-    @Override
-    public Optional<Section> getSectionById(long id) {
-        return sectionDao.getSectionById(id);
-    }
-
-    @Override
-    public boolean isBelongTaskOfSection(Task task, Section section) {
-        Optional<Section> sectionOptional = getSectionById(task.getId());
-        if(sectionOptional.isPresent()) {
-            Section sectionGet = sectionOptional.get();
-            if (sectionGet.getId() != task.getSection().getId()) {
-                return false;
-            }
-            Optional<Project> projectOptional = projectService.getProjectById(sectionGet.getProject().getId());
-            if (projectOptional.isEmpty()) {
-                return false;
-            }
-            return sectionGet.getProject().getId() == projectOptional.get().getId();
-        }
-        return false;
-    }
-
     private Section reorderInProject(Section section) {
-        Section persistedSection;
+        Optional<Section> lastSection = sectionDao.getLastSectionOfProjectByProjectId(section.getProject().getId());
 
-        if (section.getNextIdSection() == 0) {
-            // получаем id последней секции в проекте
-            Section lastSectionInTheProject = section.getProject().getIdFirstSection() == 0
-                    ? null
-                    : sectionDao.getLastSectionOfProjectByProjectId(section.getProject().getId());
+        Section persistedSection = sectionDao.persist(section);
 
-            persistedSection = sectionDao.persist(section);
-            if (lastSectionInTheProject == null) {
-                section.getProject().setIdFirstSection(persistedSection.getId());
-                projectService.update(section.getProject());
+        Optional<Section> nextSection = getSectionById(section.getNextIdSection());
+        if (section.getNextIdSection() == 0 || nextSection.isEmpty()) {
+            if (lastSection.isPresent()) {
+                Section lastSectionGet = lastSection.get();
+                lastSectionGet.setNextIdSection(persistedSection.getId());
+                update(lastSectionGet);
             } else {
-                lastSectionInTheProject.setNextIdSection(persistedSection.getId());
-                update(lastSectionInTheProject);
+                persistedSection.setFirst(true);
+                persistedSection = update(persistedSection);
             }
         } else {
-            persistedSection = sectionDao.persist(section);
             Section prevSection = getPrevSection(section.getNextIdSection());
             prevSection.setNextIdSection(persistedSection.getId());
             sectionDao.update(prevSection);
@@ -122,30 +91,31 @@ public class SectionServiceImpl implements SectionService {
     }
 
     private Section reorderInInbox(Section section) {
-        Section persistedSection;
-        // получаем id последней секции в inbox
-        Section lastSection = getIdFirstSectionInInboxByUserId(section.getAuthor().getId()) == 0 ?
-                null : getLastSectionInInboxByUserId(section.getAuthor().getId());
-        if (section.getNextIdSection() == 0) {
-            persistedSection = sectionDao.persist(section);
-            if (lastSection == null) {
-                Optional<User> userOptional = userService.getById(section.getAuthor().getId());
-                if(userOptional.isPresent()) {
-                    User user = userOptional.get();
-                    user.setIdFirstSection(persistedSection.getId());
-                    userService.update(user);
-                }
+        // получаем последнюю секцию в inbox
+        Optional<Section> lastSectionOptional = getLastSectionInInboxByUserId(section.getAuthor().getId());
+
+        Section persistedSection = sectionDao.persist(section);
+        Optional<Section> nextSection = getSectionById(section.getNextIdSection());
+
+        if (section.getNextIdSection() == 0 || nextSection.isEmpty()) {
+            if (lastSectionOptional.isEmpty()) {
+                persistedSection.setFirst(true);
+                sectionDao.update(persistedSection);
             } else {
-                lastSection.setNextIdSection(persistedSection.getId());
-                sectionDao.update(lastSection);
+                lastSectionOptional.get().setNextIdSection(persistedSection.getId());
+                sectionDao.update(lastSectionOptional.get());
             }
         } else {
-            persistedSection = sectionDao.persist(section);
-            Section prevSection = getPrevSection(section.getNextIdSection());
+            Section prevSection = getPrevSection(nextSection.get().getId());
             prevSection.setNextIdSection(persistedSection.getId());
             sectionDao.update(prevSection);
         }
         return persistedSection;
+    }
+
+    @Override
+    public Optional<Section> getSectionById(long id) {
+        return sectionDao.getSectionById(id);
     }
 
     @Override
@@ -154,12 +124,7 @@ public class SectionServiceImpl implements SectionService {
     }
 
     @Override
-    public long getIdFirstSectionInInboxByUserId(long userId) {
-        return sectionDao.getIdFirstSectionInInboxByUserId(userId);
-    }
-
-    @Override
-    public Section getLastSectionInInboxByUserId(long userId) {
+    public Optional<Section> getLastSectionInInboxByUserId(long userId) {
         return sectionDao.getLastSectionInInboxByUserId(userId);
     }
 

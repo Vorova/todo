@@ -4,6 +4,7 @@ import com.vorova.todo.exception.CheckRequestException;
 import com.vorova.todo.models.entity.Project;
 import com.vorova.todo.models.entity.Role;
 import com.vorova.todo.models.entity.Section;
+import com.vorova.todo.models.entity.Task;
 import com.vorova.todo.models.entity.User;
 import com.vorova.todo.service.abstracts.ProjectService;
 import com.vorova.todo.service.abstracts.RoleService;
@@ -50,10 +51,10 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         if (!Objects.equals(environment.getProperty("spring.jpa.hibernate.ddl-auto"), "create")) return;
         addRoles();
-        addUsers(COUNT_USERS);
+        addUsers();
         addSections();
         addTasks();
-        // todo добавить labels для пользователя;
+        addLabels();
     }
 
     private void addRoles() {
@@ -73,8 +74,8 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
         }
     }
 
-    private void addUsers(int count) {
-        for (int i = 1; i <= count; i++){
+    private void addUsers() {
+        for (int i = 1; i <= COUNT_USERS; i++){
             User user = new User();
 
             user.setEmail("email" + i + "@mail.ru");
@@ -100,7 +101,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
             Project project = new Project();
             project.setTitle("Project #" + i + " for user " + user.getEmail());
             project.setAuthor(user);
-            projectService.add(project, user);
+            projectService.add(project);
         }
     }
 
@@ -136,7 +137,28 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
     }
 
     private void addTasks(){
-        // todo добавка задач
+        List<User> users = userService.getAllUsers();
+        for (User user : users) {
+            List<Project> projects = projectService.getProjectsByUserId(user.getId());
+            for (Project project : projects) {
+                List<Section> sections = sectionService.getSectionsByProjectId(project.getId());
+                for (Section section : sections) {
+                    for(int i = 0; i < random(1, 5); i++) {
+                        Task task = new Task();
+                        task.setUser(user);
+                        task.setTitle("Task #" + i + " for user: " + user.getEmail());
+                        task.setDescription("Some description");
+                        task.setProject(random(1, 10) < 3 ? null : project);
+                        task.setSection(random(1,10) < 3 || task.getProject() == null ? null : section);
+                        taskService.add(task);
+                    }
+                }
+            }
+        }
+    }
+
+    private void addLabels() {
+        // todo добавить labels
     }
 
     int random(int min, int max) {

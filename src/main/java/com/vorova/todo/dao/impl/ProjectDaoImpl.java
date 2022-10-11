@@ -23,12 +23,16 @@ public class ProjectDaoImpl implements ProjectDao {
     }
 
     @Override
-    public Project getLastProjectOfUserByUserId(long userId) {
-        return entityManager.createQuery("""
+    public Optional<Project> getLastProjectOfUserByUserId(long userId) {
+        try {
+            return Optional.of(entityManager.createQuery("""
                 SELECT p FROM Project p WHERE p.author.id = :userId AND p.nextProjectId = 0
             """, Project.class)
-                .setParameter("userId", userId)
-                .getSingleResult();
+                    .setParameter("userId", userId)
+                    .getSingleResult());
+        } catch (Exception ex) {
+            return Optional.empty();
+        }
     }
 
     @Override

@@ -2,9 +2,7 @@ package com.vorova.todo.service.impl;
 
 import com.vorova.todo.dao.abstracts.ProjectDao;
 import com.vorova.todo.models.entity.Project;
-import com.vorova.todo.models.entity.User;
 import com.vorova.todo.service.abstracts.ProjectService;
-import com.vorova.todo.service.abstracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,27 +14,25 @@ import java.util.Optional;
 public class ProjectServiceImpl implements ProjectService {
 
     private final ProjectDao projectDao;
-    private final UserService userService;
-
     @Autowired
-    public ProjectServiceImpl(ProjectDao projectDao, UserService userService) {
+    public ProjectServiceImpl(ProjectDao projectDao) {
         this.projectDao = projectDao;
-        this.userService = userService;
     }
 
     @Override
     @Transactional
-    public Project add(Project project, User user) {
-        Project lastProject = user.getIdFirstProject() == 0 ? null : projectDao.getLastProjectOfUserByUserId(user.getId());
+    public Project add(Project project) {
+        Optional<Project> lastProject = projectDao.getLastProjectOfUserByUserId(project.getAuthor().getId());
         Project persistedProject = projectDao.persist(project);
 
         // reordered
-        if(lastProject == null) {
-            user.setIdFirstProject(persistedProject.getId());
-            userService.update(user);
+        if(lastProject.isPresent()) {
+            Project lastProjectGet = lastProject.get();
+            lastProjectGet.setNextProjectId(persistedProject.getId());
+            projectDao.update(lastProjectGet);
         } else {
-            lastProject.setNextProjectId(persistedProject.getId());
-            projectDao.update(lastProject);
+            persistedProject.setFirst(true);
+            projectDao.update(project);
         }
         return persistedProject;
     }

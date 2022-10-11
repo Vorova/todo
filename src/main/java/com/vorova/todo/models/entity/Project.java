@@ -43,7 +43,7 @@ public class Project {
     @OneToMany(mappedBy = "project")
     private List<Section> sections;
 
-    @Column(name = "id_first_section")
-    private long idFirstSection;
+    @Column(name = "is_first")
+    private boolean isFirst;
 
 }

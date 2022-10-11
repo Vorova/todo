@@ -9,7 +9,7 @@ public interface ProjectDao {
 
     Project persist(Project project);
 
-    Project getLastProjectOfUserByUserId(long userId);
+    Optional<Project> getLastProjectOfUserByUserId(long userId);
 
     Project update(Project project);
 

@@ -34,12 +34,6 @@ public class User implements UserDetails {
     @Column(name = "date_persist")
     private LocalDateTime datePersist;
 
-    @Column(name = "id_first_project")
-    private long idFirstProject;
-
-    @Column(name = "id_first_section")
-    private long idFirstSection;
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",
         joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},

@@ -9,18 +9,15 @@ public interface SectionDao {
 
     Section persist(Section section);
 
-    Section getLastSectionOfProjectByProjectId(long id);
+    Optional<Section> getLastSectionOfProjectByProjectId(long id);
 
     Section update(Section section);
 
     List<Section> getSectionByProjectId(long projectId);
 
-    Optional<Section> getSectionById(long sectionId);
-
     Section getPrevSection(long sectionId);
 
-    long getIdFirstSectionInInboxByUserId(long userId);
+    Optional<Section> getLastSectionInInboxByUserId(long userId);
 
-    Section getLastSectionInInboxByUserId(long userId);
-
+    Optional<Section> getSectionById(long sectionId);
 }
